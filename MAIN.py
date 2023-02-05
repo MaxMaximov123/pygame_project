@@ -31,7 +31,8 @@ class Ceil(Sprite):
             number: int,
             is_noop: bool,
             delimeter_width: int,
-            pygame_Surface: Surface, *groups: AbstractGroup) -> None:
+            pygame_Surface: Surface,
+            *groups: AbstractGroup) -> None:
         super().__init__(*groups)
         # проверка входных данных на корректность
         if row_index < 0:

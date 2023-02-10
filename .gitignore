@@ -1,4 +1,3 @@
 build/
-dist/
-doc/
+work/
 *.spec

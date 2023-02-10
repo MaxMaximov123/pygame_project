@@ -1,0 +1,2 @@
+Сборка в Linux под Windows
+wine pyinstaller MAIN.py --onefile

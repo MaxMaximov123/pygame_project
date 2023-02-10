@@ -395,10 +395,12 @@ def show_go_screen(field) -> None:
         surface, f"{nickname.get_value()}, количество сделанных вами ходов: {field.get_step_count()}", 42, 400, 500)
     draw_text(surface, "Нажмите на любую кнопку, чтобы продолжить", 42, 400, 600)
     # файл открыт в режиме 'a' для добавления строк по строчно
-    with open("res.txt", "a") as file:
+    with open("res.txt", "a", encoding="utf-8") as file:
         # запись результата в файл
+        nam = str(nickname.get_value())
+        lev = str(level.get_value()[0][0])
         file.write(
-            f'{nickname.get_value()}: {level.get_value()[0][0]}: {field.get_step_count()}' + '\n')
+            f'{nam}: {lev}: {field.get_step_count()}' + '\n')
 
     # обновление экрана
     pygame.display.flip()
@@ -470,7 +472,7 @@ def look_result() -> None:
     # vertical - вертикальная координата текста
     vertical = 10
     # считывание строк из файла результатов
-    with open("res.txt", "r") as file:
+    with open("res.txt", "r", encoding="utf-8") as file:
         # цикл по строкам файла
         for line in file:
             # выводим текст соотвествующей строчки на экран

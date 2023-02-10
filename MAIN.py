@@ -23,7 +23,10 @@ IM: Surface = image.load('mamont.jpg')
 
 
 class Ceil(Sprite):
-    # конструктор класса клетки
+    '''
+    класс клетки, отвечающий за один квадратик поля
+    '''
+
     def __init__(
             self,
             row_index: int,
@@ -32,6 +35,9 @@ class Ceil(Sprite):
             is_noop: bool,
             delimeter_width: int,
             pygame_Surface: Surface, *groups: AbstractGroup) -> None:
+        '''
+        иницилизация конструктора класса клетки
+        '''
         super().__init__(*groups)
         # проверка входных данных на корректность
         if row_index < 0:
@@ -44,7 +50,7 @@ class Ceil(Sprite):
         self.__original_Surface: Surface = pygame_Surface
         # номер ячейки
         self.__original_number = number
-        #self.__current_number = number
+        # self.__current_number = number
         # строка ячейки
         self.__original_row_index = row_index
         self.current_row_index = row_index
@@ -63,12 +69,12 @@ class Ceil(Sprite):
     def get_number(self) -> int:
         return self.__original_number
 
-    # функция возвращения параметра 'пустоты поля'
     def get_is_noop(self) -> bool:
+        '''функция возвращения параметра пустоты поля'''
         return self.__is_noop
 
-    # функция масштабирования изображения
     def set_rect(self, rect: Rect, is_last_row: bool, is_last_column: bool) -> None:
+        ''' функция масштабирования изображения '''
         # вычисляем положение изображения с учетом зазоров
         # вычисляем размер изображения с учетом зазоров
         x: int = rect.x
@@ -107,24 +113,26 @@ class Ceil(Sprite):
         if self.__is_noop:
             return
         # впечатываем номер ячейки
-        #myfont = font.SysFont(font.get_fonts()[0],48)
-        #myfont = font.SysFont(font.get_default_font(), 48)
+        # myfont = font.SysFont(font.get_fonts()[0],48)
+        # myfont = font.SysFont(font.get_default_font(), 48)
         myfont = font.SysFont(None, 48)
 
         fontimg = myfont.render(str(self.__original_number), True, (255, 0, 0))
-        #self.image = fontimg
+        # self.image = fontimg
         fontrect = fontimg.get_rect()
         self.image.blit(fontimg, fontrect)
 
 
 class Field(Group):
-    # конструктор
+    ''' класс поля, отвечающий за группу клеток-квадратиков '''
+
     def __init__(
         self,
         count: int,
         delimeter_width: int,
         image_Surface: Surface,
     ) -> None:
+        ''' конструктор класса поля'''
         # проверка входных данных на корректность
         if count < 2:
             raise Exception('count < 2')
@@ -187,8 +195,8 @@ class Field(Group):
         super().__init__(*ceils)
         self.shake_field()
 
-    # переопределяем функцию рисования поля на экране
     def draw(self, surface: Surface) -> List[Rect]:
+        ''' переопределяем функцию рисования поля на экране '''
         # получаем размеры экрана
         surface_width, surface_higth = surface.get_size()
         # вычисляем размер изображения ячейки
@@ -215,8 +223,8 @@ class Field(Group):
         # вызываем родительский метод рисования
         return super().draw(surface)
 
-    # функция перемешивания поля
     def shake_field(self) -> None:
+        ''' функция перемешивания поля '''
         # формируем список индексов строк и стролбцов
         row_column_index: List[Tuple(int, int)] = []
         for sprite in self.sprites():
@@ -250,24 +258,24 @@ class Field(Group):
             else:
                 continue
 
-    # функция возвращает номер ячейки
     def __get_ceil_current_number(self, ceil: Ceil) -> int:
+        ''' функция возвращает номер ячейки '''
         return ceil.current_row_index * self.__count + ceil.current_column_index + 1
 
-    # проверка собираемости поля
     def test_aviable_build(self) -> bool:
+        ''' функция проверки собираемости поля '''
         Ceils: List[Ceil] = []
         for sprite in self.sprites():
             if type(sprite) is Ceil:
                 ceil: Ceil = sprite
                 # добавление клетки в список клеток
                 Ceils.append(ceil)
-        #print(", ".join(str(i.get_number()) for i in  Ceils))
-        #print(", ".join(str(self.__get_ceil_current_number(i)) for i in  Ceils))
+        # print(", ".join(str(i.get_number()) for i in  Ceils))
+        # print(", ".join(str(self.__get_ceil_current_number(i)) for i in  Ceils))
         Ceils = sorted(
             Ceils, key=lambda ceil: self.__get_ceil_current_number(ceil))
-        #print(", ".join(str(i.get_number()) for i in  Ceils))
-        #print(", ".join(str(self.__get_ceil_current_number(i)) for i in  Ceils))
+        # print(", ".join(str(i.get_number()) for i in  Ceils))
+        # print(", ".join(str(self.__get_ceil_current_number(i)) for i in  Ceils))
 
         N: int = 0
         # row_index пустой ячейки
@@ -280,27 +288,27 @@ class Field(Group):
                 continue
             current_ceil_number: int = current_ceil.get_number()
             Ceils_before = Ceils[:index]
-            #print(f'номер текущей ячейки {current_ceil_number}')
-            #print('список номеров ячеек до текущей')
-            #print(", ".join(str(i.get_number()) for i in  Ceils_before))
+            # print(f'номер текущей ячейки {current_ceil_number}')
+            # print('список номеров ячеек до текущей')
+            # print(", ".join(str(i.get_number()) for i in  Ceils_before))
             for current_ceil_before in Ceils_before:
                 if current_ceil_before.get_is_noop():
                     continue
                 if current_ceil_before.get_number() > current_ceil_number:
                     N += 1
-            #print(f'результат {N}')
+            # print(f'результат {N}')
         if self.__count % 2 == 0:
-            #print(f'Номер строки с пустой ячейкой {cell_noop_row_index + 1}')
+            # print(f'Номер строки с пустой ячейкой {cell_noop_row_index + 1}')
             N += (cell_noop_row_index + 1)
 
-        #print(f'результат {N}')
-        #print(f'число строк/столбцов {self.__count}')
-        #N += self.__count
-        #print(f'результат {N}')
+        # print(f'результат {N}')
+        # print(f'число строк/столбцов {self.__count}')
+        # N += self.__count
+        # print(f'результат {N}')
         return (N % 2) == 0
 
-    # функция, выполняющаяся по щелчку мышки
     def mouse_click(self, mouse_pos) -> None:
+        ''' функция, выполняющаяся по щелчку мышки '''
         if self.__is_build:
             return
         self.step_count += 1
@@ -337,8 +345,8 @@ class Field(Group):
                     self.is_build()
                     return
 
-    # проверка собранности поля
     def is_build(self) -> bool:
+        ''' проверка собранности поля '''
         if self.__is_build:
             return True
         for sprite in self.sprites():
@@ -349,8 +357,8 @@ class Field(Group):
         self.__is_build = True
         return True
 
-    # функция возвращения количества ходов
     def get_step_count(self) -> int:
+        ''' функция возвращения количества ходов '''
         return self.step_count
 
 
@@ -358,29 +366,26 @@ pygame.init()
 # создание поля
 surface = pygame.display.set_mode((800, 800))
 
-# функция установки начальных сведений о игре
-
 
 def set_difficulty(value, difficulty) -> None:
+    ''' функция установки начальных сведений о игре '''
     global COUNT
     global IM
     COUNT = difficulty
     IM = image.load('mamont.jpg')  # Image.open('mamont.jpg')
 
-# функция рисования текста
-
 
 def draw_text(surf: Surface, text: str, size: int, x: int, y: int) -> None:
+    ''' функция для рисования текста '''
     font = pygame.font.SysFont(None, size)
     text_surface = font.render(text, True, (0, 255, 0))
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
-# функция отрисвки текста с заданными параметрами на экране
-
 
 def show_go_screen(field) -> None:
+    ''' функция отрисвки текста с заданными параметрами на экране '''
     surface.blit(surface, pygame.Color(0, 0, 255), surface.get_rect())
     # рисуем текст
     draw_text(surface, "ПОБЕДА!", 64, 400, 400)
@@ -392,7 +397,8 @@ def show_go_screen(field) -> None:
     # файл открыт в режиме 'a' для добавления строк по строчно
     with open("res.txt", "a") as file:
         # запись результата в файл
-        file.write(f'{nickname.get_value()}: {level.get_value()[0][0]}: {field.get_step_count()}' + '\n')
+        file.write(
+            f'{nickname.get_value()}: {level.get_value()[0][0]}: {field.get_step_count()}' + '\n')
 
     # обновление экрана
     pygame.display.flip()
@@ -408,8 +414,8 @@ def show_go_screen(field) -> None:
                 waiting = False
 
 
-# функция запуска игры
 def start_the_game() -> None:
+    ''' функция запуска игры '''
     # x, y = im.size
     pygame.init()
 
@@ -448,15 +454,15 @@ def start_the_game() -> None:
             show_go_screen(field)
             running = False
 
-# функция просмотра результатов
-
 
 def look_result() -> None:
-    #draw_text(surface, "Этот метод пока не работает:(", 64, 400, 150)
-    #draw_text(surface, "Нажмите на любую кнопку, чтобы продолжить", 42, 400, 250)
+    ''' функция просмотра результатов '''
+
+    # draw_text(surface, "Этот метод пока не работает:(", 64, 400, 150)
+    # draw_text(surface, "Нажмите на любую кнопку, чтобы продолжить", 42, 400, 250)
     screen_result = pygame.display.set_mode((800, 800), pygame.RESIZABLE)
     # заполнение экрана цветом
-    screen_result.fill((255, 0, 0))
+    screen_result.fill((128, 128, 128))
     # номер строки с результатом
     number_res = 1
     # horisontal - горизантальная координата текста
@@ -505,7 +511,7 @@ menu = pygame_menu.Menu('Пятнашки', 600, 600,
 nickname = menu.add.text_input('Ваш никнейм: ', default='Никнейм')
 # 'шкала' для выбора уровня сложности
 level = menu.add.selector('Уровни сложности: ', [
-                  ('Простой', 2), ('Cредний', 3), ('Сложный', 4)], onchange=set_difficulty)
+    ('Простой', 2), ('Cредний', 3), ('Сложный', 4)], onchange=set_difficulty)
 # другие элементы меню: кнопки
 menu.add.button('Нажмите, чтобы играть', start_the_game)
 menu.add.button('Посмотреть результаты', look_result)
